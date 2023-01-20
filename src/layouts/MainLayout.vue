@@ -2,42 +2,45 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
+        <div>
+          <q-btn
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="toggleDashboardDrawer"
+          />
+          <q-btn dense flat icon="home" round @click="goHome()" />
+          <q-btn
+            dense
+            flat
+            icon="search"
+            label="Rechercher astres"
+            round
+            @click="goToSearch()"
+          />
+        </div>
+        <q-toolbar-title> Star Share </q-toolbar-title>
+        <!--<div>Quasar v{{ $q.version }}</div>-->
         <q-btn
           flat
           dense
           round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
+          icon="person"
+          aria-label="Account"
+          @click="toggleUserDialog"
         />
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
+    <q-drawer v-model="dashboardDrawerOpen" show-if-above bordered>
+      <DashboardDrawer />
     </q-drawer>
+
+    <q-dialog v-model="userDialogOpen">
+      <UserSignInDialog />
+    </q-dialog>
 
     <q-page-container>
       <router-view />
@@ -46,71 +49,37 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+import { defineComponent, ref } from "vue";
+import DashboardDrawer from "src/components/dashboard-drawer/DashboardDrawer.vue";
+import UserSignInDialog from "src/components/user-dialog/UserSignInDialog.vue";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
-  name: 'MainLayout',
-
-  components: {
-    EssentialLink
-  },
-
-  setup () {
-    const leftDrawerOpen = ref(false)
-
+  name: "MainLayout",
+  setup() {
+    const dashboardDrawerOpen = ref(false);
+    const userDialogOpen = ref(false);
+    const route = useRoute();
+    const router = useRouter();
     return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
-})
+      dashboardDrawerOpen,
+      userDialogOpen,
+      toggleDashboardDrawer() {
+        dashboardDrawerOpen.value = !dashboardDrawerOpen.value;
+      },
+      toggleUserDialog() {
+        userDialogOpen.value = !userDialogOpen.value;
+      },
+      goToSearch() {
+        console.log("Going to search");
+        router.replace(`/search`);
+      },
+      goHome() {
+        console.log("Going home");
+        router.replace(`/`);
+      },
+    };
+  },
+  components: { DashboardDrawer, UserSignInDialog },
+});
 </script>
